@@ -1,14 +1,18 @@
-# /rag_project/llm_handler.py
-
 import httpx
 from typing import List
 import logging
+
+# Corrected Imports: Removed the leading dots.
 from config import settings
 from schemas import Chunk
 
 logger = logging.getLogger(__name__)
 
 async def ask_mistral(question: str, relevant_chunks: List[Chunk]) -> str:
+    """
+    Generates an answer using the Mistral API based on the high-quality
+    context provided by the retriever.
+    """
     context_parts = [f"CONTEXT from Page {chunk.page_number}:\n{chunk.text}" for chunk in relevant_chunks]
     context = "\n\n---\n\n".join(context_parts)
     
@@ -20,8 +24,8 @@ You are an AI assistant for insurance policy analysis. Your task is to answer th
 2.  Do not use any external knowledge or make assumptions.
 3.  When you find the answer, you must make the answer precise and to the point.
 4.  If the context does not contain the answer, you MUST respond with exactly this phrase: "This information could not be found in the provided document."
-5.  the response should be atmost 100 words max and also should be clean from special characters and should be in a proper format.
-6.  If there is a chance for the answer to be a number, you must make the answer a number.but dont makeup the number.only provide one when there is one.
+5.  The response should be at most 100 words max and also should be clean from special characters and should be in a proper format.
+6.  If there is a chance for the answer to be a number, you must make the answer a number. Do not make up a number; only provide one when there is one in the context.
 ---
 **CONTEXT:**
 {context}

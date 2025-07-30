@@ -1,5 +1,7 @@
-# /rag_project/cache.py
+from typing import Dict, List
+# Corrected Import: Removed the leading dot.
+from schemas import Chunk
 
-from typing import Dict, Any
-
-processed_document_cache: Dict[str, Any] = {}
+# Simple in-memory dictionary to cache processed documents.
+# The key is the document URL and the value is the list of Chunk objects.
+processed_document_cache: Dict[str, List[Chunk]] = {}
