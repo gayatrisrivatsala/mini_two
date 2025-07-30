@@ -1,13 +1,17 @@
+# /requirements.txt
+
+# Core web framework
 fastapi
 uvicorn
 pydantic
 pydantic-settings
 httpx
-PyMuPDF
-sentence-transformers
-torch
-scikit-learn
-numpy
 unstructured[pdf]
+PyMuPDF
+
+# For vector math and similarity calculations
+numpy
+scikit-learn
+
+# A dependency of 'unstructured' for text processing
 nltk
-python-magic-bin
