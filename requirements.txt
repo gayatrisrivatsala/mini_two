@@ -3,9 +3,15 @@
 # Core web framework
 fastapi
 uvicorn
+
+# Data validation and settings management
 pydantic
 pydantic-settings
+
+# For making HTTP requests to external APIs
 httpx
+
+# For PDF parsing and text extraction
 unstructured[pdf]
 PyMuPDF
 
@@ -13,5 +19,5 @@ PyMuPDF
 numpy
 scikit-learn
 
-# A dependency of 'unstructured' for text processing
+# A dependency of 'unstructured'
 nltk
