@@ -12,12 +12,9 @@ pydantic-settings
 httpx
 
 # For PDF parsing and text extraction
-unstructured[pdf]
+pdfplumber
 PyMuPDF
 
 # For vector math and similarity calculations
 numpy
 scikit-learn
-
-# A dependency of 'unstructured'
-nltk

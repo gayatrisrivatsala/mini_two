@@ -18,9 +18,9 @@ COPY . .
 
 # --- Run the Application ---
 # Tell Docker to expose the port Render will use
-EXPOSE 10000
+EXPOSE 8000
 
 # The command to run when the container starts.
 # We use --host 0.0.0.0 to make it accessible from outside the container.
 # Render provides the PORT in an environment variable, which is best practice.
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -2,7 +2,7 @@ import httpx
 import logging
 from io import BytesIO
 from typing import List
-from unstructured.partition.pdf import partition_pdf
+import pdfplumber
 
 # Corrected Imports: Removed the leading dots.
 from schemas import Chunk
@@ -36,22 +36,22 @@ async def generate_embeddings_via_api(texts: List[str]) -> List[List[float]]:
 
 async def process_pdf_to_chunks(url: str) -> List[Chunk]:
     """
-    Processes a digital PDF using the 'unstructured' FAST strategy.
+    Processes a digital PDF using pdfplumber for lightweight text extraction.
     """
-    logger.info(f"Starting digital PDF processing with 'fast' strategy for: {url}")
+    logger.info(f"Starting digital PDF processing with pdfplumber for: {url}")
     
     pdf_bytes = await download_pdf(url)
     
-    # Use the 'fast' strategy optimized for digital (non-scanned) PDFs.
-    elements = partition_pdf(
-        file=BytesIO(pdf_bytes),
-        strategy="fast"
-    )
-    
-    raw_chunks = [
-        {"text": el.text, "page_number": el.metadata.page_number or 0}
-        for el in elements if hasattr(el, 'text') and len(el.text.split()) > 10
-    ]
+    # Use pdfplumber for lightweight text extraction
+    raw_chunks = []
+    with pdfplumber.open(BytesIO(pdf_bytes)) as pdf:
+        for page_num, page in enumerate(pdf.pages):
+            text = page.extract_text()
+            if text and len(text.split()) > 10:  # Same filtering as before
+                raw_chunks.append({
+                    "text": text,
+                    "page_number": page_num
+                })
 
     if not raw_chunks:
         raise ValueError("Could not extract any meaningful text chunks from the document.")
