@@ -1,2 +1,38 @@
+# Secrets
+# Ignore the file containing environment variables and secret keys.
 .env
+
+# Virtual Environment
+# Ignore the virtual environment folder.
 myenv/
+venv/
+.venv/
+
+# Python cache files
+# These are auto-generated for performance and should not be versioned.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and editor configuration
+# Ignore personal settings for editors like VS Code and PyCharm.
+.vscode/
+.idea/
+
+# Operating System files
+# Ignore system-specific files created by macOS, Windows, etc.
+.DS_Store
+Thumbs.db
+
+# Build and distribution artifacts
+.eggs/
+*.egg-info/
+*.egg
+dist/
+build/
+
+
+.pytest_cache/
+.coverage
+htmlcov/
