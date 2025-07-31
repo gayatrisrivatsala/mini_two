@@ -18,7 +18,7 @@ app = FastAPI(title="High-Accuracy RAG API")
 
 async def verify_api_key(authorization: Optional[str] = Header(None)):
     """Dependency to verify the custom API key in the request header."""
-    if authorization != f"Bearer {settings.API_KEY}":
+    if authorization != f"Bearer 0c945ddefc63d6c04f42e8d435e9e19f19275cfbaedc6e92afe2edf5afa45011":
         raise HTTPException(status_code=403, detail="Invalid API Key")
 
 @app.get("/", tags=["General"])
