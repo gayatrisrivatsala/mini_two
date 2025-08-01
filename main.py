@@ -1,9 +1,10 @@
+# /main.py
+
 import logging
 import asyncio
 from fastapi import FastAPI, HTTPException, Header, Depends
 from typing import Optional
 
-# Corrected Imports: All imports are direct since files are in the same folder.
 from config import settings
 from schemas import RAGRequest, RAGResponse
 from cache import processed_document_cache
@@ -14,22 +15,20 @@ from llm_handler import ask_mistral
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# The semaphore is kept as a defense-in-depth measure.
+API_CONCURRENCY = 5
+MISTRAL_SEMAPHORE = asyncio.Semaphore(API_CONCURRENCY)
+
 app = FastAPI(title="High-Accuracy RAG API")
 
 async def verify_api_key(authorization: Optional[str] = Header(None)):
-    """Dependency to verify the custom API key in the request header."""
-    if authorization != f"Bearer 0c945ddefc63d6c04f42e8d435e9e19f19275cfbaedc6e92afe2edf5afa45011":
+    """Dependency to verify the API key."""
+    if authorization != f"Bearer {settings.API_KEY}":
         raise HTTPException(status_code=403, detail="Invalid API Key")
-
-@app.get("/", tags=["General"])
-async def root():
-    return {"message": "RAG API is running."}
 
 @app.post("/hackrx/run", response_model=RAGResponse, tags=["RAG"], dependencies=[Depends(verify_api_key)])
 async def process_questions(request: RAGRequest):
-    """
-    Main endpoint to process a document and answer questions about it.
-    """
+    """Main endpoint to process a document and answer questions."""
     doc_url = str(request.documents)
     
     if doc_url in processed_document_cache:
@@ -47,24 +46,26 @@ async def process_questions(request: RAGRequest):
             raise HTTPException(status_code=500, detail=f"Failed to process document. Error: {str(e)}")
 
     answers = []
+    
+    # --- THE DEFINITIVE FIX: Process questions sequentially ---
+    # Instead of creating a burst of concurrent requests with asyncio.gather,
+    # we now process each question one by one. This is slower, but it
+    # guarantees we will not violate the API's rate limit.
     for question in request.questions:
         logger.info(f"Answering question: '{question}'")
         
-        relevant_chunks = await find_relevant_chunks(question, all_chunks, top_k=5)
+        # Each 'await' will fully complete before the next loop iteration begins.
+        relevant_chunks = await find_relevant_chunks(question, all_chunks, MISTRAL_SEMAPHORE, top_k=7)
         
         if not relevant_chunks:
             answers.append("Could not find any relevant context in the document for this question.")
             continue
         
-        answer = await ask_mistral(question, relevant_chunks)
+        answer = await ask_mistral(question, relevant_chunks, MISTRAL_SEMAPHORE)
         answers.append(answer)
-        
-        # A small delay to respect API rate limits when asking multiple questions.
-        await asyncio.sleep(1.0) 
         
     return RAGResponse(answers=answers)
 
 if __name__ == "__main__":
     import uvicorn
-    # Make the project runnable with 'python main.py'
     uvicorn.run(app, host="0.0.0.0", port=8000)

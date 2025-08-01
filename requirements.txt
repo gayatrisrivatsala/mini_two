@@ -18,3 +18,7 @@ PyMuPDF
 # For vector math and similarity calculations
 numpy
 scikit-learn
+
+# For advanced text splitting
+langchain
+langchain-text-splitters
