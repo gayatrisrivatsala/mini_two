@@ -103,7 +103,7 @@ async def process_questions_batch(questions: List[str], all_chunks: List, batch_
     
     return answers
 
-@app.post("/hackrx/run", response_model=RAGResponse, tags=["RAG"], dependencies=[Depends(verify_api_key)])
+@app.post("/mini-2/run", response_model=RAGResponse, tags=["RAG"], dependencies=[Depends(verify_api_key)])
 async def process_questions(request: RAGRequest):
     """Main endpoint with enhanced processing and error handling."""
     start_time = time.time()

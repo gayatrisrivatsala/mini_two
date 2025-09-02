@@ -1,1 +1,2 @@
-"# Bajaj_HackRX_-V2" 
+"# mini -2" 
+contributions  : L PRASAD RAJU , G NAGA GAYATRI SRIVATSALA
